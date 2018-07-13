@@ -2,9 +2,12 @@ package com.github.florent37.camerafragment.sample;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ActivityCompat;
@@ -16,9 +19,11 @@ import android.widget.Toast;
 
 import com.github.florent37.camerafragment.CameraFragment;
 import com.github.florent37.camerafragment.CameraFragmentApi;
+import com.github.florent37.camerafragment.PreviewActivity;
 import com.github.florent37.camerafragment.configuration.Configuration;
 import com.github.florent37.camerafragment.listeners.CameraFragmentControlsAdapter;
 import com.github.florent37.camerafragment.listeners.CameraFragmentResultAdapter;
+import com.github.florent37.camerafragment.listeners.CameraFragmentResultListener;
 import com.github.florent37.camerafragment.listeners.CameraFragmentStateAdapter;
 import com.github.florent37.camerafragment.listeners.CameraFragmentVideoRecordTextAdapter;
 import com.github.florent37.camerafragment.widgets.CameraSettingsView;
@@ -89,6 +94,7 @@ public class CameraFragmentMainActivity extends AppCompatActivity {
     public void onRecordButtonClicked() {
         final CameraFragmentApi cameraFragment = getCameraFragment();
         if (cameraFragment != null) {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + getString(R.string.app_name) + "/images";
             cameraFragment.takePhotoOrCaptureVideo(new CameraFragmentResultAdapter() {
                 @Override
                 public void onVideoRecorded(String filePath) {
@@ -100,7 +106,7 @@ public class CameraFragmentMainActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), "onPhotoTaken " + filePath, Toast.LENGTH_SHORT).show();
                 }
             },
-            "/storage/self/primary",
+                    path,//"/storage/self/primary",
             "photo0");
         }
     }
@@ -157,26 +163,43 @@ public class CameraFragmentMainActivity extends AppCompatActivity {
         addCameraButton.setVisibility(View.GONE);
         cameraLayout.setVisibility(View.VISIBLE);
 
+//        final CameraFragment cameraFragment = CameraFragment.newInstance(new Configuration.Builder()//default demo
+//                .setCamera(Configuration.CAMERA_FACE_REAR).build());
         final CameraFragment cameraFragment = CameraFragment.newInstance(new Configuration.Builder()
-                .setCamera(Configuration.CAMERA_FACE_REAR).build());
+                .setCamera(Configuration.CAMERA_FACE_FRONT)
+//                .setCamera(Configuration.CAMERA_FACE_REAR)
+                .setMediaAction(Configuration.MEDIA_ACTION_VIDEO)
+                .setMediaQuality(Configuration.MEDIA_QUALITY_MEDIUM)
+                .setVideoDuration(Integer.MAX_VALUE)
+                .setVideoFileSize(Long.MAX_VALUE)
+                .setMinimumVideoDuration(1000)
+                .build());
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content, cameraFragment, FRAGMENT_TAG)
                 .commitAllowingStateLoss();
 
         if (cameraFragment != null) {
-            //cameraFragment.setResultListener(new CameraFragmentResultListener() {
-            //    @Override
-            //    public void onVideoRecorded(String filePath) {
-            //        Intent intent = PreviewActivity.newIntentVideo(CameraFragmentMainActivity.this, filePath);
-            //        startActivityForResult(intent, REQUEST_PREVIEW_CODE);
-            //    }
-//
-            //    @Override
-            //    public void onPhotoTaken(byte[] bytes, String filePath) {
-            //        Intent intent = PreviewActivity.newIntentPhoto(CameraFragmentMainActivity.this, filePath);
-            //        startActivityForResult(intent, REQUEST_PREVIEW_CODE);
-            //    }
-            //});
+            cameraFragment.setResultListener(new CameraFragmentResultListener() {
+                @Override
+                public void onVideoRecorded(final String filePath) {
+                    Handler mHandler = new Handler();
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = PreviewActivity.newIntentVideo(CameraFragmentMainActivity.this, filePath);
+                            startActivityForResult(intent, REQUEST_PREVIEW_CODE);
+                        }
+                    }, 1000);
+
+                }
+
+                @Override
+                public void onPhotoTaken(byte[] bytes, String filePath) {
+                    Intent intent = PreviewActivity.newIntentPhoto(CameraFragmentMainActivity.this, filePath);
+                    startActivityForResult(intent, REQUEST_PREVIEW_CODE);
+                }
+            });
 
             cameraFragment.setStateListener(new CameraFragmentStateAdapter() {
 
@@ -247,9 +270,10 @@ public class CameraFragmentMainActivity extends AppCompatActivity {
 
                 @Override
                 public void onStopVideoRecord() {
-                    recordSizeText.setVisibility(View.GONE);
-                    //cameraSwitchView.setVisibility(View.VISIBLE);
+                    recordSizeText.setVisibility(View.GONE);;//recordSizeText.setVisibility(View.GONE);
+                    cameraSwitchView.setVisibility(View.VISIBLE);//
                     settingsView.setVisibility(View.VISIBLE);
+                    mediaActionSwitchView.setVisibility(View.VISIBLE);//
                 }
 
                 @Override

@@ -10,6 +10,8 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.github.florent37.camerafragment.R;
+import com.github.florent37.camerafragment.configuration.Configuration;
+import com.github.florent37.camerafragment.internal.enums.Record;
 import com.github.florent37.camerafragment.internal.utils.Utils;
 
 /*
@@ -66,7 +68,7 @@ public class RecordButton extends android.support.v7.widget.AppCompatImageButton
                 }
             }
         });
-        setSoundEffectsEnabled(false);
+        setSoundEffectsEnabled(false);//setSoundEffectsEnabled(false);
         setIconPadding(iconPadding);
 
         displayPhotoState();
@@ -81,16 +83,16 @@ public class RecordButton extends android.support.v7.widget.AppCompatImageButton
         setPadding(padding, padding, padding, padding);
     }
 
-    //public void setMediaAction(@Configuration.MediaAction int mediaAction) {
-    //    this.mediaAction = mediaAction;
-    //    if (listener != null) {
-    //        if (Configuration.MEDIA_ACTION_PHOTO == mediaAction) {
-    //            listener.setRecordState(Record.TAKE_PHOTO_STATE);
-    //        } else {
-    //            listener.setRecordState(Record.READY_FOR_RECORD_STATE);
-    //        }
-    //    }
-    //}
+//    public void setMediaAction(@Configuration.MediaAction int mediaAction) {
+//        this.mediaAction = mediaAction;
+//        if (listener != null) {
+//            if (Configuration.MEDIA_ACTION_PHOTO == mediaAction) {
+//                listener.setRecordState(Record.TAKE_PHOTO_STATE);
+//            } else {
+//                listener.setRecordState(Record.READY_FOR_RECORD_STATE);
+//            }
+//        }
+//    }
 
     public void setRecordButtonListener(@NonNull RecordButtonListener listener) {
         this.listener = listener;

@@ -225,12 +225,12 @@ public abstract class BaseAnncaFragment<CameraId> extends Fragment implements Ca
                 clearCameraPreview();
             }
         };
-
-        if (CameraHelper.hasCamera2(getContext())) {
+        cameraController = new Camera1Controller(getContext(), cameraView, configurationProvider);
+/*        if (CameraHelper.hasCamera2(getContext())) {
             cameraController = new Camera2Controller(getContext(), cameraView, configurationProvider);
         } else {
             cameraController = new Camera1Controller(getContext(), cameraView, configurationProvider);
-        }
+        }*/
         cameraController.onCreate(savedInstanceState);
 
         //onProcessBundle
@@ -617,9 +617,9 @@ public abstract class BaseAnncaFragment<CameraId> extends Fragment implements Ca
     }
 
     protected void startRecording(@Nullable String directoryPath, @Nullable String fileName) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-            new MediaActionSound().play(MediaActionSound.START_VIDEO_RECORDING);
-        }
+//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+//            new MediaActionSound().play(MediaActionSound.START_VIDEO_RECORDING);
+//        }
 
         setRecordState(Record.RECORD_IN_PROGRESS_STATE);
         this.cameraController.startVideoRecord(directoryPath, fileName);
@@ -630,9 +630,9 @@ public abstract class BaseAnncaFragment<CameraId> extends Fragment implements Ca
     }
 
     protected void stopRecording(CameraFragmentResultListener callback) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-            new MediaActionSound().play(MediaActionSound.STOP_VIDEO_RECORDING);
-        }
+//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+//            new MediaActionSound().play(MediaActionSound.STOP_VIDEO_RECORDING);
+//        }
 
         setRecordState(Record.READY_FOR_RECORD_STATE);
         this.cameraController.stopVideoRecord(callback);
@@ -726,13 +726,13 @@ public abstract class BaseAnncaFragment<CameraId> extends Fragment implements Ca
         }
 
         final int mediaAction = configurationProvider.getMediaAction();
-        if (cameraFragmentControlsListener != null) {
+/*        if (cameraFragmentControlsListener != null) {
             if (mediaAction != Configuration.MEDIA_ACTION_UNSPECIFIED) {
                 cameraFragmentControlsListener.setMediaActionSwitchVisible(false);
             } else {
                 cameraFragmentControlsListener.setMediaActionSwitchVisible(true);
             }
-        }
+        }*/
 
         final String filePath = this.cameraController.getOutputFile().toString();
         if (cameraFragmentResultListener != null) {
